@@ -6,7 +6,7 @@ export default function Home() {
       <div className="mx-auto max-w-3xl">
         <header className="mb-8">
           <h1 className="text-3xl font-semibold tracking-tight">
-            sandybeach
+            Sandy Beach - A FennecWorks project
           </h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             chroma t2i &amp; i2i, served on runpod
