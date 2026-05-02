@@ -28,7 +28,7 @@ Why webhooks: RunPod cold starts run 3–6 min, but Vercel functions cap at 60s.
 
 ### 1. Provision services
 
-- **Vercel Postgres** (Neon-backed). Create a DB in the Vercel dashboard, copy the `POSTGRES_URL`.
+- **Railway Postgres**. Provision a Postgres service in Railway, copy the connection string into `POSTGRES_URL` (any standard `postgres://` URL works; Railway requires `sslmode=require`).
 - **Cloudflare R2** bucket named `sandybeach-images`. Create an API token with read+write to that bucket. Enable public access on the bucket (`outputs/*` is served directly to browsers).
 - **RunPod**: existing img2img endpoint `dnmokdobw4kk7l`; you need to deploy the new T2I worker to get a second endpoint id.
 

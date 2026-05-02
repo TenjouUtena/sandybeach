@@ -1,21 +1,22 @@
-import { neon, NeonQueryFunction } from "@neondatabase/serverless";
-import { drizzle, NeonHttpDatabase } from "drizzle-orm/neon-http";
+import postgres from "postgres";
+import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
-let _db: NeonHttpDatabase<typeof schema> | null = null;
-let _sql: NeonQueryFunction<false, false> | null = null;
+let _db: PostgresJsDatabase<typeof schema> | null = null;
 
-function init() {
-  if (_db && _sql) return { db: _db, sql: _sql };
+function init(): PostgresJsDatabase<typeof schema> {
+  if (_db) return _db;
   const url = process.env.POSTGRES_URL;
   if (!url) throw new Error("POSTGRES_URL is not set");
-  _sql = neon(url);
-  _db = drizzle(_sql, { schema });
-  return { db: _db, sql: _sql };
+  // Railway-style standard Postgres. Pool size 1 keeps things friendly to
+  // serverless/edge invocations that can spin up many concurrent instances.
+  const client = postgres(url, { prepare: false, max: 1 });
+  _db = drizzle(client, { schema });
+  return _db;
 }
 
-export const db = new Proxy({} as NeonHttpDatabase<typeof schema>, {
+export const db = new Proxy({} as PostgresJsDatabase<typeof schema>, {
   get(_t, p) {
-    return Reflect.get(init().db, p);
+    return Reflect.get(init(), p);
   },
 });
