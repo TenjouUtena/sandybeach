@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.env
+.env*
+
+# Virtual environments
+.venv
+.flash
+.flash/
+
+# Next.js / web
+web/node_modules
+web/.next
+web/.env.local
+web/.env*.local
+web/out
+.vercel
+
+node_modules/
+
+
+output.png
+prompt
+

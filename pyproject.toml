@@ -1,0 +1,12 @@
+[project]
+name = "sandybeach"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "diffusers>=0.37.1",
+    "requests>=2.33.1",
+    "runpod-flash>=1.16.0",
+    "torch>=2.11.0",
+]
