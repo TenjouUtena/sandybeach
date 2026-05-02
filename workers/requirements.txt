@@ -1,0 +1,12 @@
+runpod>=1.7.0
+torch
+diffusers>=0.37
+transformers
+accelerate
+safetensors
+sentencepiece
+torchvision
+protobuf
+pillow
+peft
+huggingface_hub

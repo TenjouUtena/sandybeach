@@ -4,6 +4,12 @@ function apiKey() {
   return k;
 }
 
+export function endpointId() {
+  const id = process.env.RUNPOD_ENDPOINT_ID;
+  if (!id) throw new Error("RUNPOD_ENDPOINT_ID is not set");
+  return id;
+}
+
 type RunPodStatus =
   | "IN_QUEUE"
   | "IN_PROGRESS"
@@ -17,16 +23,15 @@ export type RunPodSubmitResult = { id: string; status: RunPodStatus };
 export type RunPodStatusResult = {
   id: string;
   status: RunPodStatus;
-  output?: { image_b64?: string };
+  output?: { image_b64?: string; error?: string };
   error?: string;
 };
 
 export async function submit(
-  endpointId: string,
   input: Record<string, unknown>,
   webhook?: string,
 ): Promise<RunPodSubmitResult> {
-  const res = await fetch(`https://api.runpod.ai/v2/${endpointId}/run`, {
+  const res = await fetch(`https://api.runpod.ai/v2/${endpointId()}/run`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,28 +46,14 @@ export async function submit(
 }
 
 export async function status(
-  endpointId: string,
   runpodJobId: string,
 ): Promise<RunPodStatusResult> {
   const res = await fetch(
-    `https://api.runpod.ai/v2/${endpointId}/status/${runpodJobId}`,
+    `https://api.runpod.ai/v2/${endpointId()}/status/${runpodJobId}`,
     { headers: { Authorization: `Bearer ${apiKey()}` } },
   );
   if (!res.ok) {
     throw new Error(`RunPod status failed: ${res.status} ${await res.text()}`);
   }
   return res.json();
-}
-
-export function endpointFor(kind: "t2i" | "i2i") {
-  const id =
-    kind === "t2i"
-      ? process.env.RUNPOD_T2I_ENDPOINT_ID
-      : process.env.RUNPOD_I2I_ENDPOINT_ID;
-  if (!id) {
-    throw new Error(
-      `Missing RunPod endpoint id for ${kind} (set RUNPOD_${kind.toUpperCase()}_ENDPOINT_ID)`,
-    );
-  }
-  return id;
 }

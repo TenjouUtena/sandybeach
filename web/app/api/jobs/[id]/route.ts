@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db/client";
 import { jobs } from "@/lib/db/schema";
-import { endpointFor, status as runpodStatus } from "@/lib/runpod";
+import { status as runpodStatus } from "@/lib/runpod";
 import { publicUrl } from "@/lib/r2";
 
 export const runtime = "nodejs";
@@ -30,10 +30,7 @@ export async function GET(
     Date.now() - new Date(current.createdAt).getTime() > FALLBACK_POLL_AFTER_MS
   ) {
     try {
-      const r = await runpodStatus(
-        endpointFor(current.kind),
-        current.runpodJobId,
-      );
+      const r = await runpodStatus(current.runpodJobId);
       if (r.status !== current.status && !TERMINAL.has(current.status)) {
         const next: Partial<typeof current> = {};
         if (r.status === "IN_QUEUE") next.status = "IN_QUEUE";

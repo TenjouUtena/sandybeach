@@ -11,7 +11,7 @@ import {
   createJobSchema,
   type CreateJobInput,
 } from "@/lib/jobs";
-import { endpointFor, submit } from "@/lib/runpod";
+import { submit } from "@/lib/runpod";
 import { r2, R2_BUCKET } from "@/lib/r2";
 
 
@@ -25,6 +25,7 @@ function siteUrl(req: Request) {
 async function buildRunpodInput(parsed: CreateJobInput) {
   const { params } = parsed;
   const base = {
+    mode: parsed.kind,
     prompt: parsed.prompt,
     negative_prompt: parsed.negativePrompt,
     steps: params.steps,
@@ -73,7 +74,6 @@ export async function POST(req: Request) {
   }
 
   const id = nanoid();
-  const endpointId = endpointFor(parsed.data.kind);
   const webhook = `${siteUrl(req)}/api/jobs/webhook?jobId=${id}&secret=${encodeURIComponent(secret)}`;
 
   await db.insert(jobs).values({
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
   let runpodResult;
   try {
     const input = await buildRunpodInput(parsed.data);
-    runpodResult = await submit(endpointId, input, webhook);
+    runpodResult = await submit(input, webhook);
   } catch (err) {
     await db
       .update(jobs)
