@@ -100,8 +100,9 @@ export async function POST(req: Request) {
         error: err instanceof Error ? err.message : String(err),
       })
       .where(eq(jobs.id, id));
+    
     return NextResponse.json(
-      { error: "runpod submit failed" },
+      { error: `runpod submit failed ${err}` },
       { status: 502 },
     );
   }
